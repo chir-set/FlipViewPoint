@@ -76,20 +76,13 @@ class FlipViewPointWidget(ScriptedLoadableModuleWidget, VTKObservationMixin):
 
     # Connections
 
-    # Buttons
-    self.ui.redPushButton.connect('clicked(bool)', self.onRedButton)
-    self.ui.greenPushButton.connect('clicked(bool)', self.onGreenButton)
-    self.ui.yellowPushButton.connect('clicked(bool)', self.onYellowButton)
+    self.ui.sliceNodeSelector.connect("currentNodeChanged(vtkMRMLNode*)", self.logic.process)
+    self.ui.flipPushButton.connect('clicked(bool)', self.onFlipButton)
     self.ui.restorePushButton.connect('clicked(bool)', self.onRestoreButton)
-
-  def onRedButton(self):
-    self.logic.process("Red")
     
-  def onGreenButton(self):
-    self.logic.process("Green")
-    
-  def onYellowButton(self):
-    self.logic.process("Yellow")
+  def onFlipButton(self):
+    sliceNode = self.ui.sliceNodeSelector.currentNode()
+    self.logic.process(sliceNode)
     
   def onRestoreButton(self):
     self.logic.restoreViews()
@@ -115,8 +108,9 @@ class FlipViewPointLogic(ScriptedLoadableModuleLogic):
     ScriptedLoadableModuleLogic.__init__(self)
 
   #https://www.slicer.org/wiki/Documentation/Nightly/ScriptRepository#Change_slice_orientation
-  def process(self, view):
-    sliceNode = slicer.app.layoutManager().sliceWidget(view).mrmlSliceNode()
+  def process(self, sliceNode):
+    if sliceNode is None:
+        return;
     SliceToRAS = sliceNode.GetSliceToRAS()
     transform=vtk.vtkTransform()
     transform.SetMatrix(SliceToRAS)
@@ -125,7 +119,7 @@ class FlipViewPointLogic(ScriptedLoadableModuleLogic):
     sliceNode.UpdateMatrices()
 
   def restoreViews(self):
-    views = ['Red', 'Yellow', 'Green']
+    views = slicer.app.layoutManager().sliceViewNames()
     for view in views:
         slicer.app.layoutManager().sliceWidget(view).mrmlSliceNode().SetOrientationToDefault()
 
