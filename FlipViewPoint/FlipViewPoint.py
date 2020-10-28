@@ -23,7 +23,7 @@ class FlipViewPoint(ScriptedLoadableModule):
     # TODO: update with short description of the module and a link to online module documentation
     self.parent.helpText = """
 Flip 2D views by 180°.
-See more information in <a href="https://github.com/chir-set/PathReformat">module documentation</a>.
+See more information in <a href="https://github.com/chir-set/FlipViewPoint">module documentation</a>.
 """
     # TODO: replace with organization, grant and thanks
     self.parent.acknowledgementText = """
